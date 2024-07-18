@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Loan Labyrinth</title>
+    <style>
+        body {
+            font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif, sans-serif;
+            background-color: #d3ffce;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        #game-container {
+            max-width: 600px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        #game-message {
+            font-size: 20px;
+            margin-bottom: 20px;
+        }
+
+        #loan-options {
+            text-align: left;
+            margin-bottom: 20px;
+        }
+
+        #loan-options p {
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        #score {
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+
+        #game-over {
+            margin-top: 20px;
+            font-size: 16px;
+        }
+
+        #quiz-container {
+            display: none;
+            margin-top: 20px;
+        }
+
+        #quiz-question {
+            font-weight: bold;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+
+        #quiz-options {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #quiz-options button {
+            margin-top: 10px;
+            font-size: 16px;
+        }
+
+        /* Custom CSS */
+
+        .game-container {
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        #game-message {
+            font-weight: bold;
+        }
+
+        #loan-options {
+            border: 1px solid #ccc;
+            padding: 20px;
+        }
+
+        #score {
+            color: #333;
+        }
+
+        #game-over {
+            color: #999;
+        }
+
+        #quiz-container {
+            background-color: #eee;
+            border: 1px solid #ccc;
+            padding: 20px;
+        }
+
+        #quiz-question {
+            color: #333;
+        }
+
+        #quiz-options button {
+            background-color: #ccc;
+            color: #333;
+            border: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>Loan Labyrinth</h1>
+    <div id="game-container">
+        <p id="game-message">Welcome to Loan Labyrinth! Are you ready to learn about loans?</p>
+        <button id="start-button" onclick="startGame()">Start</button>
+        <div id="game-content" style="display: none;">
+            <h2>Select a Loan</h2>
+            <div id="loan-options">
+                <p><strong>Car Loan</strong></p>
+                <p>Interest Rate: 5%</p>
+                <p>Term: 5 years</p>
+                <p>Loan for purchasing a car.</p>
+                <button onclick="takeLoan(5)">Take Loan</button>
+            </div>
+            <div id="score"></div>
+            <div id="game-over"></div>
+        </div>
+        <div id="quiz-container">
+            <h2>Quiz</h2>
+            <div id="quiz-question"></div>
+            <div id="quiz-options"></div>
+            <button onclick="submitAnswer()">Submit</button>
+            <div id="quiz-score"></div>
+        </div>
+    </div>
+
+    <script>let currentLoanIndex = 0;
+let loanOptions = [
+    { name: "Car Loan", interestRate: 5 },
+    { name: "Student Loan", interestRate: 3 },
+    { name: "Mortgage Loan", interestRate: 4 }
+];
+let score = 0;
+let quizQuestions = [
+    { question: "What is an interest rate?", options: ["The additional money you have to pay the bank when taking out a loan", "The amount of money you have to repay", "The duration of the loan"], answer: 0 },
+    { question: "What is a mortgage loan?", options: ["A loan for purchasing a car", "A loan for educational expenses", "A loan for buying a home"], answer: 2 },
+    { question: "What is a student loan?", options: ["A loan for purchasing a car", "A loan for educational expenses", "A loan for buying a home"], answer: 1 },
+    { question: "What is a car loan?", options: ["A loan for purchasing a car", "A loan for educational expenses", "A loan for buying a home"], answer: 0 },
+    { question: "What is debt?", options: ["The cost of borrowing money", "The amount of money you have to repay", "The duration of the loan"], answer: 1 }
+];
+let currentQuestionIndex = 0;
+let quizScore = 0;
+
+function startGame() {
+    const startButton = document.getElementById("start-button");
+    const gameContent = document.getElementById("game-content");
+    startButton.style.display = "none";
+    gameContent.style.display = "block";
+}
+
+function takeLoan(interestRate) {
+    const gameContent = document.getElementById("game-content");
+    gameContent.innerHTML = `
+        <h2>Loan Details</h2>
+        <p>Interest Rate: ${interestRate}%</p>
+        <p>Term: 5 years</p>
+        <p>Remember, loans need to be repaid with interest!</p>
+        <button onclick="repayLoan(${interestRate})">Repay Loan</button>
+    `;
+}
+
+function repayLoan(interestRate) {
+    const gameContent = document.getElementById("game-content");
+    score += interestRate;
+    gameContent.innerHTML = `
+        <h2>Congratulations!</h2>
+        <p>You have repaid your loan.</p>
+        <div id="score">Your score: ${score}</div>
+    `;
+    currentLoanIndex++;
+    if (currentLoanIndex < loanOptions.length) {
+        setTimeout(() => {
+            showNextLoan();
+        }, 2000); // Wait for 2 seconds before showing the next loan
+    } else {
+        setTimeout(() => {
+            showQuiz();
+        }, 2000); // Wait for 2 seconds before showing the quiz
+    }
+}
+
+function showNextLoan() {
+    const gameContent = document.getElementById("game-content");
+    const nextLoan = loanOptions[currentLoanIndex];
+    gameContent.innerHTML = `
+        <h2>Select a Loan</h2>
+        <div id="loan-options">
+            <p><strong>${nextLoan.name}</strong></p>
+            <p>Interest Rate: ${nextLoan.interestRate}%</p>
+            <p>Term: 5 years</p>
+            <p>${nextLoan.name.toLowerCase()}.</p>
+            <button onclick="takeLoan(${nextLoan.interestRate})">Take Loan</button>
+        </div>
+        <div id="score">Your score: ${score}</div>
+    `;
+}
+
+function showQuiz() {
+    const gameContent = document.getElementById("game-content");
+    const quizContainer = document.getElementById("quiz-container");
+    gameContent.style.display = "none";
+    quizContainer.style.display = "block";
+    showNextQuestion();
+}
+
+function showNextQuestion() {
+    const quizQuestion = document.getElementById("quiz-question");
+    const quizOptions = document.getElementById("quiz-options");
+    const currentQuestion = quizQuestions[currentQuestionIndex];
+    quizQuestion.textContent = currentQuestion.question;
+    quizOptions.innerHTML = "";
+    currentQuestion.options.forEach((option, index) => {
+        const button = document.createElement("button");
+        button.textContent = option;
+        button.onclick = () => selectAnswer(index);
+        quizOptions.appendChild(button);
+    });
+}
+
+function selectAnswer(answerIndex) {
+    const selectedOption = quizQuestions[currentQuestionIndex].options[answerIndex];
+    const correctAnswerIndex = quizQuestions[currentQuestionIndex].answer;
+    const quizOptions = document.getElementById("quiz-options");
+    const buttons = quizOptions.getElementsByTagName("button");
+    for (let i = 0; i < buttons.length; i++) {
+        buttons[i].disabled = true; // Disable all buttons after an answer is selected
+    }
+    if (answerIndex === correctAnswerIndex) {
+        quizScore++;
+    }
+    currentQuestionIndex++;
+    if (currentQuestionIndex < quizQuestions.length) {
+        setTimeout(() => {
+            showNextQuestion();
+        }, 2000); // Wait for 2 seconds before showing the next question
+    } else {
+        setTimeout(() => {
+            showQuizScore();
+        }, 2000); // Wait for 2 seconds before showing the quiz score
+    }
+}
+
+function showQuizScore() {
+    const quizContainer = document.getElementById("quiz-container");
+    const quizScoreElement = document.getElementById("quiz-score");
+    quizScoreElement.textContent = `Your quiz score: ${quizScore} / ${quizQuestions.length}`;
+    quizContainer.innerHTML += `
+        <p>Thank you for playing Loan Labyrinth and taking the quiz!</p>
+        <p>Would you like to play again?</p>
+        <button onclick="restartGame()">Restart</button>
+    `;
+}
+
+function restartGame() {
+    currentLoanIndex = 0;
+    score = 0;
+    currentQuestionIndex = 0;
+    quizScore = 0;
+    const quizContainer = document.getElementById("quiz-container");
+    const gameContent = document.getElementById("game-content");
+    const quizScoreElement = document.getElementById("quiz-score");
+    quizContainer.innerHTML = "";
+    quizContainer.style.display = "none";
+    gameContent.style.display = "block";
+    quizScoreElement.textContent = "";
+    startGame();
+}
